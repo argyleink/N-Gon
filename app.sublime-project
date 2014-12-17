@@ -1,0 +1,68 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "Grunt: Default task, used for local development",
+			"shell_cmd": "grunt"
+		},
+		{
+			"name": "Grunt Serve: Serve the dist/ directory",
+			"shell_cmd": "grunt serve"
+		},
+		{
+			"name": "Grunt Dev: Build for local dev, but don't watch or serve",
+			"shell_cmd": "grunt dev"
+		},
+		{
+			"name": "Grunt Prod: Build and serve a super crunched version of the site",
+			"shell_cmd": "grunt prod"
+		},
+		{
+			"name": "Grunt Heroku: Super crunch the build, but don't serve or watch",
+			"shell_cmd": "grunt heroku"
+		}
+	],
+	"folders":
+	[
+		{
+			"file_exclude_patterns":[
+				"*.html"
+			],
+			"follow_symlinks": true,
+			"name": "App",
+			"path": "app"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Dist",
+			"path": "dist"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Tasks",
+			"path": "tasks"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Bower Libraries",
+			"path": "app/js/bower"
+		},
+		{
+			"folder_exclude_patterns":
+			[
+				"app",
+				"dist",
+				"tasks",
+				"node_modules"
+			],
+			"follow_symlinks": true,
+			"name": "Configs",
+			"path": "/"
+		}
+	],
+	"settings":
+	{
+		"tab_size": 2,
+		"translate_tabs_to_spaces": true
+	}
+}

@@ -1,0 +1,22 @@
+doctype html
+html(manifest = dev ? '' : 'manifest.appcache')
+	include includes/head
+	body
+		
+		.row.center-xs.middle-xs(style='height:100vh;'): .col-xs(style='height:100%;')
+			.cube-window
+				article.cube
+					section.face.front
+						h1 Front face
+					section.face.top
+						h1 Top face
+					section.face.bottom
+						h1 Bottom face
+					section.face.right
+						h1 Right face
+					section.face.left
+						h1 Left face
+
+	script(src='js/lib.min.js')
+	script(src='js/app.js')
+	script(src='js/ultimate-cube.js')

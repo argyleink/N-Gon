@@ -1,0 +1,41 @@
+{
+  "name": "App",
+  "version": "0.0.3",
+  "author": "Adam Argyle",
+  "private": false,
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/argyleink/website.git"
+  },
+  "scripts": {
+    "postinstall": "node_modules/.bin/bower install && grunt",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "autoprefixer-stylus": "*",
+    "bower": "*",
+    "clientjade": "*",
+    "grunt-asciify": "^0.2.2",
+    "grunt-browser-sync": "*",
+    "grunt-bump": "*",
+    "grunt-concurrent": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-imagemin": "*",
+    "grunt-contrib-jade": "*",
+    "grunt-contrib-stylus": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-manifest": "*",
+    "grunt-newer": "*",
+    "grunt-notify": "*",
+    "grunt-shell": "*",
+    "grunt-svgmin": "*",
+    "grunt-uncss": "*",
+    "load-grunt-configs": "*",
+    "matchdep": "*",
+    "time-grunt": "*"
+  }
+}
