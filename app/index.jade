@@ -6,16 +6,12 @@ html(manifest = dev ? '' : 'manifest.appcache')
 		.row.center-xs.middle-xs(style='height:100vh;'): .col-xs(style='height:100%;')
 			.cube-window
 				article.cube
-					section.face.front
-						h1 Front face
-					section.face.top
-						h1 Top face
-					section.face.bottom
-						h1 Bottom face
-					section.face.right
-						h1 Right face
 					section.face.left
-						h1 Left face
+						h1 Front face
+					section.face.middle
+						h1 Top face
+					section.face.right
+						h1 Bottom face
 
 	script(src='js/lib.min.js')
 	script(src='js/app.js')

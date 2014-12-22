@@ -40,8 +40,8 @@ var UniCube = (function(){
       case 'dragend':
         // todo: round here to nearest 90deg
         // set the state vars to that new value
-        state.x = newX;
-        state.y = newY;
+        state.x = nearestMultiple(newX, 90);
+        state.y = nearestMultiple(newY, 90);
         // send current coords to drag event to forcefeed a nice animation, acting as a from value
         handleDragEnd(e, newX, newY);
         break;
@@ -53,21 +53,21 @@ var UniCube = (function(){
     switch(e.gesture.direction) {
       case 'left':
         snapTo({
-          rotateY: ['-90deg', x],
-          rotateX: '0deg' // todo: figure out how to manage rotations so x doesnt go sideways
+          rotateY: [state.x, x],
+          rotateX: '0deg'
         });
         break;
       case 'right':
         snapTo({
-          rotateY: ['90deg', x],
+          rotateY: [state.x, x],
           rotateX: '0deg'
         });
         break;
       case 'up':
-        snapTo({ rotateX: ['-90deg', y] });
+        snapTo({ rotateX: [state.y, y] });
         break;
       case 'down':
-        snapTo({ rotateX: ['90deg', y] });
+        snapTo({ rotateX: [state.y, y] });
         break;
     }
   }
@@ -77,6 +77,11 @@ var UniCube = (function(){
       duration: 500,
       easing: 'spring'
     });
+  }
+
+  // Utilities
+  function nearestMultiple(i, j) {
+    return Math.round(i/ j) * j;
   }
 
   init();
