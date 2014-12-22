@@ -1,5 +1,6 @@
-var UniCube = (function(){
+var UltimateCube = (function(){
 
+  // SETUP AND OPTIONS
   var hammerEl
     , cubeContainer     = $('#ultimate-cube')
     , options           = {
@@ -15,7 +16,8 @@ var UniCube = (function(){
     , util              = {
         middle: 1,
         right:  2,
-        left:   0
+        left:   0,
+        lastKnownDirection: null
       }
     ;
 
@@ -26,8 +28,7 @@ var UniCube = (function(){
     '<h1>Third</h1>'
   ]
 
-  // begin ultimate cube biz logic
-
+  // BEGIN ULTIMATE CUBE LOGIC
   function init() {
     // create faces from an array of html
     create();
@@ -131,27 +132,9 @@ var UniCube = (function(){
   }
 
   function handleDragEnd(e) {
-    // for (var face in faces) {
-    //   if (!faces.hasOwnProperty(face)) continue;
-      
-    //   var side    = faces[face]
-    //     , faceEl  = side.node
-    //     , newX    = Math.round(side.x + e.gesture.deltaX);
+    util.lastKnownDirection = e.gesture.direction;
 
-    //   if (!faceEl) continue;
-
-    //   faceEl.css({
-    //     transform: 'rotateY('+ newX +'deg)'
-    //   });
-    // }
-
-
-    // // set the state vars to that new value
-    // side.x = nearestMultiple(newX, 90);
-    // side.y = nearestMultiple(newY, 90);
-    // // send current coords to drag event to forcefeed a nice animation, acting as a from value
-
-    // needs to apply to all faces
+    // drag ended, but which direction did it come from? Switch it!
     switch(e.gesture.direction) {
       case 'left':
       case 'right':
@@ -173,6 +156,7 @@ var UniCube = (function(){
           });
         }
         break;
+
       case 'up':
       case 'down':
         // up and down only control 1 face, the middle one
@@ -196,16 +180,15 @@ var UniCube = (function(){
 
   function snapComplete(e) {
     // todo: on animation complete, manage faces and apply virtualization logic
-    console.info('snap complete');
+    console.info('snap complete, last known direction was ' + util.lastKnownDirection);
   }
 
-  // Utilities
+  // UTILITIES
   function nearestMultiple(i, j) {
     return Math.round(i/ j) * j;
   }
 
-  init();
-
+  // API
   return {
     init: init
   }
