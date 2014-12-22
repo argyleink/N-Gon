@@ -1,32 +1,18 @@
+.cube-window,
+.face
+  position:absolute
+  width:100%
+  height:100%
+  top:0
+  left:0
+
 .cube-window
   perspective:800
   perspective-origin:50% 50%
-  position:absolute
-  top:0
-  left:0
-  width:100%
-  height:100%
-
-.cube
-  position:relative
-  margin:0 auto
-  width:100%
-  height:100%
-  transform-style:preserve-3d
-  transform-origin:center center -375px
-  will-change:transform
   
   & > .face
     position:absolute
-    background:hsla(0,0%,0%,50%)
-    text-align:center
+    background:hsla(200,100%,50%,50%)
     color:white
-    width:100%
-    height:100%
-    
-  & > .left
-    transform: rotateY(90deg)
-    transform-origin:left center
-  & > .right
-    transform: rotateY(-90deg)
-    transform-origin:right center
+    will-change:transform
+    transform-style:preserve-3d
