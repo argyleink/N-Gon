@@ -17,6 +17,7 @@ var UltimateCube = (function(){
         middle: 1,
         right:  2,
         left:   0,
+        currentDataIndex:   0,
         lastKnownDirection: null
       }
     ;
@@ -25,7 +26,10 @@ var UltimateCube = (function(){
   var data = [
     '<h1>First</h1>',
     '<h1>Second</h1>',
-    '<h1>Third</h1>'
+    '<h1>Third</h1>',
+    '<h1>Fourth</h1>',
+    '<h1>Fifth</h1>',
+    '<h1>Sixth</h1>'
   ]
 
   // BEGIN ULTIMATE CUBE LOGIC
@@ -144,16 +148,18 @@ var UltimateCube = (function(){
 
           var side    = faces[face]
             , faceEl  = side.node
-            , newX    = Math.round(side.x + e.gesture.deltaX);
-
-          // we're snapping, so round to nearest 90 and stash in the side state 
-          side.x  = nearestMultiple(newX, 90);
+            , newX    = Math.round(side.x + e.gesture.deltaX)
+            , snapX   = nearestMultiple(newX, 90)
+            , moved   = snapX !== side.x; // did we actually move
 
           if (!faceEl) continue;
 
+          // we're snapping, so round to nearest 90 and stash in the side state 
+          side.x  = snapX;
+
           snapTo(faceEl, {
             rotateY: [side.x, newX]
-          });
+          }, face === 'middle' && moved ? true : false);
         }
         break;
 
@@ -170,17 +176,56 @@ var UltimateCube = (function(){
     }
   }
 
-  function snapTo(el, options) {
+  function snapTo(el, options, completeListen) {
     el.velocity(options, {
       duration: 500,
       easing:   'spring',
-      complete: snapComplete
+      complete: completeListen ? snapComplete : null
     });
   }
 
   function snapComplete(e) {
-    // todo: on animation complete, manage faces and apply virtualization logic
-    console.info('snap complete, last known direction was ' + util.lastKnownDirection);
+    // goal here is to manage cube content after animation and interactions have settled
+    // this snap complete is only fired if the cube moved to a new position, and only fires once
+    // that means incrementing our position in the data array
+    // swapping out a face
+    // swapping in a face
+    // and updating the faces object with the new positions
+
+    switch(util.lastKnownDirection) {
+      case 'left':
+        // increment data index, we moved forward
+        util.currentDataIndex++;
+
+        if (faces.left.node) faces.left.node.remove();
+        // old middle face is now left face
+        faces.left.node = faces.middle.node;
+        faces.left.x = -90;
+        faces.left.y = 0;
+
+        faces.middle.node = faces.right.node;
+        faces.middle.x = 0;
+        faces.middle.y = 0;
+
+        // add a new face, intended for the right face
+        createFace(util.right, data[util.currentDataIndex + 1]);
+        break;
+
+      case 'right':
+        util.currentDataIndex--;
+
+        if (faces.right.node) faces.right.node.remove();
+        faces.right.node = faces.middle.node;
+        faces.right.x = 90;
+        faces.right.y = 0;
+
+        faces.middle.node = faces.left.node;
+        faces.middle.x = 0;
+        faces.middle.y = 0;
+
+        createFace(util.left, data[util.currentDataIndex - 1]);
+        break;
+    }
   }
 
   // UTILITIES
