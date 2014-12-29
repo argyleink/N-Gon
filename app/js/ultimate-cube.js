@@ -1,8 +1,7 @@
 var UltimateCube = (function(){
 
   // SETUP AND OPTIONS
-  var hammerEl
-    , cubeContainer     = $('#ultimate-cube')
+  var cubeContainer     = $('#ultimate-cube')
     , options           = {
         dragLockToAxis:     true,
         preventDefault:     true
@@ -26,7 +25,7 @@ var UltimateCube = (function(){
   var data = [
     '<h1>First</h1>',
     '<h1>Second</h1>',
-    '<h1>Third</h1>',
+    '<img src="https://placekitten.com/g/500/500">',
     '<h1>Fourth</h1>',
     '<h1>Fifth</h1>',
     '<h1>Sixth</h1>'
@@ -58,6 +57,11 @@ var UltimateCube = (function(){
         faces.middle.node = newFace;
         faces.middle.x = 0;
         faces.middle.y = 0;
+
+        newFace.css({
+          transform: 'rotateY('+ faces.left.x +'deg)',
+          zIndex: 2
+        });
         break;
 
       case util.left:
@@ -66,7 +70,8 @@ var UltimateCube = (function(){
         faces.left.y = 0;
 
         newFace.css({
-          transform: 'rotateY('+ faces.left.x +'deg)'
+          transform: 'rotateY('+ faces.left.x +'deg)',
+          zIndex: 0
         });
         break;
 
@@ -76,7 +81,8 @@ var UltimateCube = (function(){
         faces.right.y = 0;
 
         newFace.css({
-          transform: 'rotateY('+ faces.right.x +'deg)'
+          transform: 'rotateY('+ faces.right.x +'deg)',
+          zIndex: 1
         });
         break;
     }
@@ -93,7 +99,7 @@ var UltimateCube = (function(){
   }
 
   function handleDrag(e) {
-    console.log(e.gesture);
+    console.log(e.gesture.deltaX);
 
     // pass the event on to their respective handlers
     switch(e.type) {
@@ -122,16 +128,27 @@ var UltimateCube = (function(){
       // if 3 faces arent being animated, ignore the missing face
       if (!faceEl) continue;
 
+      // set a max touch pan amount
+      // TODO:
+      // if (Math.abs(e.gesture.deltaX) > 90) continue;
+
       // apply new x position
       faceEl.css({
-        transform: 'rotateY('+ newX +'deg)'
+        transform: 'rotateY('+ newX +'deg)',
+        zIndex: determineStackOrderFromX(newX)
       });
     }
   }
 
   function handleVerticalDrag(e) {
+    var newY = Math.round(faces.middle.y + e.gesture.deltaY);
+
+    // set a max touch pan amount
+    // TODO:
+    // if (Math.abs(newY) > 90) return;
+
     faces.middle.node.css({
-      transform: 'rotateX('+ Math.round(faces.middle.y + e.gesture.deltaY) +'deg)'
+      transform: 'rotateX('+ newY +'deg)'
     });
   }
 
@@ -157,6 +174,17 @@ var UltimateCube = (function(){
           // we're snapping, so round to nearest 90 and stash in the side state 
           side.x  = snapX;
 
+          // console.info(face);
+          // console.log('new x: ' + newX);
+          // console.log('snap x: ' + snapX);
+
+          // if (newX > 0 && newX > snapX) newX = Math.min(newX, snapX);
+          // if (newX < 0 && newX < snapX) newX = Math.max(newX, snapX);
+
+          // console.info(face);
+          // console.log('new x: ' + newX);
+          // console.log('snap x: ' + snapX);
+
           snapTo(faceEl, {
             rotateY: [side.x, newX]
           }, face === 'middle' && moved ? true : false);
@@ -178,8 +206,8 @@ var UltimateCube = (function(){
 
   function snapTo(el, options, completeListen) {
     el.velocity(options, {
-      duration: 500,
-      easing:   'spring',
+      duration: 700,
+      easing:   'easeOutExpo',
       complete: completeListen ? snapComplete : null
     });
   }
@@ -226,6 +254,13 @@ var UltimateCube = (function(){
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
     }
+  }
+
+  function determineStackOrderFromX(posX) {
+    if      (posX >= -45 && posX <= 45)   return 2;
+    else if (posX <= -45 && posX >= -90)  return 1;
+    else if (posX >= 45 && posX <= 90)    return 1;
+    else if (posX > 90 || posX < -90)     return 0;
   }
 
   // UTILITIES
