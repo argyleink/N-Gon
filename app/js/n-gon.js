@@ -1,7 +1,7 @@
 var nGon = (function(){
 
   // SETUP AND OPTIONS
-  var cubeContainer     = $('#ultimate-cube')
+  var cubeContainer     = $('#n-gon')
     , options           = {
         dragLockToAxis:     true,
         preventDefault:     true
@@ -24,11 +24,18 @@ var nGon = (function(){
   // test fake data
   var data = [
     '<h1>First</h1>',
-    ['<h1>Top</h1>','<h1>Middle</h1>','<h1>Bottom</h1>'],
-    '<h1>Second</h1>',
+    [
+      '<div class="poly"><h1>Top</h1></div>',
+      '<div class="poly"><h1>Second</h1></div>',
+      '<div class="poly"><h1>Bottom</h1></div>'
+    ],
     '<img src="https://placekitten.com/g/500/500">',
     '<h1>Fourth</h1>',
-    '<h1>Fifth</h1>',
+    [
+      '<div class="poly"><img src="https://placekitten.com/g/500/500"></div>',
+      '<div class="poly"><img src="https://placekitten.com/g/800/500"></div>',
+      '<div class="poly"><img src="https://placekitten.com/g/700/500"></div>'
+    ],
     '<h1>Sixth</h1>'
   ]
 
@@ -145,8 +152,7 @@ var nGon = (function(){
     var newY = Math.round(faces.middle.y + e.gesture.deltaY);
 
     // set a max touch pan amount
-    // TODO:
-    // if (Math.abs(newY) > 90) return;
+    if (Math.abs(newY) > 100) return;
 
     faces.middle.node.css({
       transform: 'rotateX('+ newY +'deg)'
@@ -199,7 +205,7 @@ var nGon = (function(){
   function snapTo(el, options, completeListen) {
     el.velocity(options, {
       duration: 700,
-      easing:   'easeOutExpo',
+      easing:   'spring', // easeOutExpo
       complete: completeListen ? snapComplete : null
     });
   }
