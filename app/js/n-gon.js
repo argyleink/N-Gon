@@ -71,6 +71,7 @@ var nGon = (function(){
     }).html(data);
 
     // depending on the side being created, set some styles and positions
+    // TODO: do this in a loop and use some better config vars like rotations and stacks do
     switch (side) {
       case util.middle:
         // set some state defaults
@@ -144,14 +145,17 @@ var nGon = (function(){
   function handleHorizontalDrag(e) {
     for (var face in faces) {
       // for each face
-      if (!faces.hasOwnProperty(face)) continue;
 
+      // REASONS TO STOP DRAGGING
+      if (!faces.hasOwnProperty(face)) continue;
       // set a max touch pan amount, 10 degrees past threshold
       if (Math.abs(e.gesture.deltaX) > 100) continue;
-
       // dont let user scroll before the first element
       if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
+      // dont let user scroll before the last element
+      if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
+      // DRAG LOGIC
       var side    = faces[face]
         , faceEl  = side.node
         , newX    = Math.round(side.x + e.gesture.deltaX);
@@ -195,6 +199,7 @@ var nGon = (function(){
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
           if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
+          if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
           var side    = faces[face]
             , faceEl  = side.node
