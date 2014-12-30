@@ -2,6 +2,7 @@ var nGon = (function(){
 
   // SETUP AND OPTIONS
   var cubeContainer     = $('#n-gon')
+    , callbacks         = []
     , options           = {
         dragLockToAxis:     true,
         preventDefault:     true
@@ -99,6 +100,10 @@ var nGon = (function(){
     cubeContainer.append(newFace);
   }
 
+  function appendFace(html) {
+    console.warn('append not ready');
+  }
+
   function listen() {
     // 1 event for maximum perf
     cubeContainer
@@ -107,7 +112,7 @@ var nGon = (function(){
   }
 
   function handleDrag(e) {
-    console.log(e.gesture.deltaX);
+    // console.log(e.gesture.deltaX);
 
     // pass the event on to their respective handlers
     switch(e.type) {
@@ -252,6 +257,18 @@ var nGon = (function(){
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
     }
+
+    // iterate over each callback (if any) and call that shit
+    for (var callback in callbacks)
+      callbacks[callback](util.lastKnownDirection, faces);
+  }
+
+  function flip(direction) {
+    console.warn('flip not ready');
+  }
+
+  function flipEnd(fn) {
+    callbacks.push(fn);
   }
 
   function setDeltaMax(d) {
@@ -274,7 +291,10 @@ var nGon = (function(){
 
   // API
   return {
-    init: init
+    init:     init
+  , flip:     flip
+  , append:   appendFace
+  , flipEnd:  flipEnd
   }
 
 })();
