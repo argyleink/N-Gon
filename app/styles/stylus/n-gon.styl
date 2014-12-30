@@ -17,11 +17,12 @@ cube-color = hsla(200,100%,50%,100%)
     background:cube-color
     will-change:transform
     transform-style:preserve-3d
-    backface-visibility:hidden
     
     & > .poly
       background:cube-color
       overflow:hidden
+      backface-visibility:hidden
+      will-change:transform
       
       &:nth-child(1)
         transform:rotateX(90deg)
