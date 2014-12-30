@@ -176,6 +176,9 @@ var nGon = (function(){
     // set a max touch pan amount
     if (Math.abs(newY) > 100) return;
 
+    // hide the 2 side faces to maintain the illusion
+    toggleSideFaces(true);
+
     faces.middle.node.css({
       transform: 'rotateX('+ newY +'deg)'
     });
@@ -224,7 +227,7 @@ var nGon = (function(){
 
         snapTo(faces.middle.node, {
           rotateX: [faces.middle.y, newY]
-        });
+        }, true);
         break;
     }
   }
@@ -278,6 +281,11 @@ var nGon = (function(){
 
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
+
+      case 'up':
+      case 'down':
+        toggleSideFaces();
+        break;
     }
 
     // iterate over each callback (if any) and call that shit
@@ -318,6 +326,19 @@ var nGon = (function(){
 
   function flipEnd(fn) {
     flipEndCallbacks.push(fn);
+  }
+
+  function toggleSideFaces(hide) {
+    if (hide) {
+      if (faces.left.node.css('visibility') === 'hidden') return;
+      faces.left.node.css('visibility', 'hidden');
+      faces.right.node.css('visibility', 'hidden');
+    } else {
+      if (faces.left.node.css('visibility') === 'hidden') {
+        faces.left.node.css('visibility', '');
+        faces.right.node.css('visibility', '');
+      }
+    }
   }
 
   function setDeltaMax(d) {
