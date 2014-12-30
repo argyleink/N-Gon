@@ -4,7 +4,7 @@ html(manifest = dev ? '' : 'manifest.appcache')
   body
     
     //- flexbox centering and layout
-    .row.center-xs.middle-xs(style='height:100vh;'): .col-xs(style='height:100%;')
+    .row.center-xs.middle-xs(style='height:100vh;'): .col-xs(style='height:500px; max-width:500px;')
 
       //- window provides 3D viewport and perspective
       #n-gon.cube-window
@@ -13,4 +13,4 @@ html(manifest = dev ? '' : 'manifest.appcache')
   script(src='js/n-gon.js')
   script.
     nGon.init();
-    nGon.flipEnd(function(dir, faces){ console.log(dir, faces); });
+    //- nGon.flipEnd(function(dir, faces){ console.log(dir, faces); });
