@@ -113,7 +113,8 @@ var nGon = (function(){
   }
 
   function appendFace(html) {
-    console.warn('append not ready');
+    if      (typeof(html) === 'string') data.push(html);
+    else if (typeof(html) === 'object') data.push(html.outerHTML);
   }
 
   function listen() {
