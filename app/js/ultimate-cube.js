@@ -119,18 +119,18 @@ var UltimateCube = (function(){
 
   function handleHorizontalDrag(e) {
     for (var face in faces) {
-      if (!faces.hasOwnProperty(face)) continue;
       // for each face
+      if (!faces.hasOwnProperty(face)) continue;
+
+      // set a max touch pan amount, 10 degrees past threshold
+      if (Math.abs(e.gesture.deltaX) > 100) continue;
+
       var side    = faces[face]
         , faceEl  = side.node
         , newX    = Math.round(side.x + e.gesture.deltaX);
 
       // if 3 faces arent being animated, ignore the missing face
       if (!faceEl) continue;
-
-      // set a max touch pan amount
-      // TODO:
-      // if (Math.abs(e.gesture.deltaX) > 90) continue;
 
       // apply new x position
       faceEl.css({
@@ -165,7 +165,9 @@ var UltimateCube = (function(){
 
           var side    = faces[face]
             , faceEl  = side.node
-            , newX    = Math.round(side.x + e.gesture.deltaX)
+            , over    = Math.abs(e.gesture.deltaX) > 135
+            , dX      = over ? setDeltaMax(e.gesture.deltaX) : e.gesture.deltaX
+            , newX    = Math.round(side.x + dX)
             , snapX   = nearestMultiple(newX, 90)
             , moved   = snapX !== side.x; // did we actually move
 
@@ -173,17 +175,6 @@ var UltimateCube = (function(){
 
           // we're snapping, so round to nearest 90 and stash in the side state 
           side.x  = snapX;
-
-          // console.info(face);
-          // console.log('new x: ' + newX);
-          // console.log('snap x: ' + snapX);
-
-          // if (newX > 0 && newX > snapX) newX = Math.min(newX, snapX);
-          // if (newX < 0 && newX < snapX) newX = Math.max(newX, snapX);
-
-          // console.info(face);
-          // console.log('new x: ' + newX);
-          // console.log('snap x: ' + snapX);
 
           snapTo(faceEl, {
             rotateY: [side.x, newX]
@@ -254,6 +245,12 @@ var UltimateCube = (function(){
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
     }
+  }
+
+  function setDeltaMax(d) {
+    if (d < -135) d = Math.max(d, -90);
+    if (d > 135)  d = Math.min(d, 90);
+    return d;
   }
 
   function determineStackOrderFromX(posX) {
