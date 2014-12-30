@@ -157,6 +157,9 @@ var nGon = (function(){
   }
 
   function handleVerticalDrag(e) {
+    // prevent drag if there are not vertical poly's to scroll to
+    if (typeof(data[util.currentDataIndex]) === 'string') return;
+
     var newY = Math.round(faces.middle.y + e.gesture.deltaY);
 
     // set a max touch pan amount
@@ -200,8 +203,12 @@ var nGon = (function(){
 
       case 'up':
       case 'down':
+        // prevent drag if there are not vertical poly's to scroll to
+        if (typeof(data[util.currentDataIndex]) === 'string') return;
+
         // up and down only control 1 face, the middle one
         var newY = Math.round(faces.middle.y + e.gesture.deltaY);
+        
         faces.middle.y = nearestMultiple(newY, 90);
 
         snapTo(faces.middle.node, {
