@@ -2,25 +2,28 @@ var nGon = (function(){
 
   // SETUP AND OPTIONS
   var cubeContainer     = $('#n-gon')
-    , callbacks         = []
+    , flipEndCallbacks  = []
     , options           = {
         dragLockToAxis:     true,
         preventDefault:     true
       }
+      // will hold state information and a ref to the node
     , faces             = {
-        // will hold state information and a ref to the node
         middle: {},
         right:  {},
         left:   {}
       }
+      // will be used like this: rotations[direction][facePosition]
     , rotations         = {
         left:   { left: -180, middle: -90, right: 0 },
-        right:  { left: 0, middle: 90, right: 180 }
+        right:  { left: 0,    middle: 90,  right: 180 }
       }
+      // will be used like this: stacks[direction][facePosition]
     , stacks            = {
         left:   { left: 0, middle: 1, right: 2 },
         right:  { left: 2, middle: 1, right: 0 }
       }
+      // utility object to store various values needing to be tracked through interaction
     , util              = {
         middle: 1,
         right:  2,
@@ -278,8 +281,8 @@ var nGon = (function(){
     }
 
     // iterate over each callback (if any) and call that shit
-    for (var callback in callbacks)
-      callbacks[callback](util.lastKnownDirection, faces);
+    for (var callback in flipEndCallbacks)
+      flipEndCallbacks[callback](util.lastKnownDirection, faces);
   }
 
   function flip(direction) {
@@ -314,7 +317,7 @@ var nGon = (function(){
   }
 
   function flipEnd(fn) {
-    callbacks.push(fn);
+    flipEndCallbacks.push(fn);
   }
 
   function setDeltaMax(d) {
