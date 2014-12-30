@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html manifest="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>N-Gon</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" href="styles/master.css">
+  </head>
+  <body>
+    <div style="height:100vh;" class="row center-xs middle-xs">
+      <div style="height:500px; max-width:500px;" class="col-xs">
+        <div id="n-gon" class="cube-window"></div>
+      </div>
+    </div>
+  </body>
+  <script src="js/lib.min.js"></script>
+  <script src="js/n-gon.js"></script>
+  <script>
+    nGon.init();
+    nGon.append('<h1>Final</h1>');
+    nGon.flipEnd(function(dir, faces){ 
+      console.log(dir, faces); 
+    });
+  </script>
+</html>
