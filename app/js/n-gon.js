@@ -198,9 +198,12 @@ var nGon = (function(){
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
+
+          // REASONS TO NOT SNAP
           if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
           if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
+          // SNAP LOGIC
           var side    = faces[face]
             , faceEl  = side.node
             , over    = Math.abs(e.gesture.deltaX) > 135
@@ -269,6 +272,7 @@ var nGon = (function(){
         faces.middle.y = 0;
 
         // add a new face, intended for the right face
+        if (!data[util.currentDataIndex + 1]) break;
         createFace(util.right, data[util.currentDataIndex + 1]);
         break;
 
@@ -305,8 +309,6 @@ var nGon = (function(){
     else if (direction === 'forward')   direction = 'left';
     else if (direction === 'backward')  direction = 'right';
 
-    // TODO: UP and DOWN directions...
-
     // set direction, helps with the snap complete function that cleans up after settling to a new location
     util.lastKnownDirection = direction;
 
@@ -323,6 +325,7 @@ var nGon = (function(){
       faceEl.css('z-index', stacks[direction][face]);
 
       // snapTo the new rotation position
+      // TODO: UP and DOWN directions...
       snapTo(faceEl, {
         rotateY: [rotations[direction][face], side.x]
       }, face === 'middle' ? true : false);
