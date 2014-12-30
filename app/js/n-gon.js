@@ -138,6 +138,9 @@ var nGon = (function(){
       // set a max touch pan amount, 10 degrees past threshold
       if (Math.abs(e.gesture.deltaX) > 100) continue;
 
+      // dont let user scroll before the first element
+      if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
+
       var side    = faces[face]
         , faceEl  = side.node
         , newX    = Math.round(side.x + e.gesture.deltaX);
@@ -174,6 +177,7 @@ var nGon = (function(){
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
+          if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
 
           var side    = faces[face]
             , faceEl  = side.node
