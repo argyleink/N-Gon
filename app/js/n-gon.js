@@ -13,6 +13,14 @@ var nGon = (function(){
         right:  {},
         left:   {}
       }
+    , rotations         = {
+        left:   { left: -180, middle: -90, right: 0 },
+        right:  { left: 0, middle: 90, right: 180 }
+      }
+    , stacks            = {
+        left:   { left: 0, middle: 1, right: 2 },
+        right:  { left: 2, middle: 1, right: 0 }
+      }
     , util              = {
         middle: 1,
         right:  2,
@@ -208,7 +216,7 @@ var nGon = (function(){
 
         // up and down only control 1 face, the middle one
         var newY = Math.round(faces.middle.y + e.gesture.deltaY);
-        
+
         faces.middle.y = nearestMultiple(newY, 90);
 
         snapTo(faces.middle.node, {
@@ -221,7 +229,7 @@ var nGon = (function(){
   function snapTo(el, options, completeListen) {
     el.velocity(options, {
       duration: 700,
-      easing:   'spring', // easeOutExpo
+      easing:   'easeOutExpo', // spring
       complete: completeListen ? snapComplete : null
     });
   }
@@ -275,7 +283,34 @@ var nGon = (function(){
   }
 
   function flip(direction) {
-    console.warn('flip not ready');
+    // set a default direction for flipping
+    if      (!direction)                direction = 'left';
+    // correct any other verbiage
+    else if (direction === 'forward')   direction = 'left';
+    else if (direction === 'backward')  direction = 'right';
+
+    // TODO: UP and DOWN directions...
+
+    // set direction, helps with the snap complete function that cleans up after settling to a new location
+    util.lastKnownDirection = direction;
+
+    // for each face, determine direction and apply the new proper position
+    for (var face in faces) {
+      if (!faces.hasOwnProperty(face)) continue;
+
+      var side    = faces[face]
+        , faceEl  = side.node;
+
+      if (!faceEl) continue;
+
+      // set zindex prior to rotation, it's so fast people shouldnt notice the bad layering for the first 50%
+      faceEl.css('z-index', stacks[direction][face]);
+
+      // snapTo the new rotation position
+      snapTo(faceEl, {
+        rotateY: [rotations[direction][face], side.x]
+      }, face === 'middle' ? true : false);
+    }
   }
 
   function flipEnd(fn) {
