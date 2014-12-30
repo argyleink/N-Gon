@@ -1,4 +1,4 @@
-var UltimateCube = (function(){
+var nGon = (function(){
 
   // SETUP AND OPTIONS
   var cubeContainer     = $('#ultimate-cube')
@@ -24,6 +24,7 @@ var UltimateCube = (function(){
   // test fake data
   var data = [
     '<h1>First</h1>',
+    ['<h1>Top</h1>','<h1>Middle</h1>','<h1>Bottom</h1>'],
     '<h1>Second</h1>',
     '<img src="https://placekitten.com/g/500/500">',
     '<h1>Fourth</h1>',
