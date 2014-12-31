@@ -203,10 +203,10 @@ var nGon = (function(){
     switch(e.gesture.direction) {
       case 'left':
       case 'right':
+        if (util.preventHorizontalPan) return;
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
-          if (util.preventHorizontalPan) continue;
 
           // SNAP LOGIC
           var side    = faces[face]
