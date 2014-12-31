@@ -321,26 +321,52 @@ var nGon = (function(){
     else if (direction === 'forward')   direction = 'left';
     else if (direction === 'backward')  direction = 'right';
 
+    // REASONS TO PREVENT FLIP
+    // would flip past beginning or end horizontally
+    // TODO: 
+    // would flip past beginning or end vertically
+    if (faces.middle.y === -90 && direction === 'up') return;
+    if (faces.middle.y === 90 && direction === 'down') return;
+
     // set direction, helps with the snap complete function that cleans up after settling to a new location
     util.lastKnownDirection = direction;
 
-    // for each face, determine direction and apply the new proper position
-    for (var face in faces) {
-      if (!faces.hasOwnProperty(face)) continue;
+    // LEFT & RIGHT FLIP
+    if (direction === 'left' || direction === 'right') {
+      // for each face, determine direction and apply the new proper position
+      for (var face in faces) {
+        if (!faces.hasOwnProperty(face)) continue;
 
-      var side    = faces[face]
-        , faceEl  = side.node;
+        var side    = faces[face]
+          , faceEl  = side.node;
 
-      if (!faceEl) continue;
+        if (!faceEl) continue;
 
-      // set zindex prior to rotation, it's so fast people shouldnt notice the bad layering for the first 50%
-      faceEl.css('z-index', stacks[direction][face]);
+        // set zindex prior to rotation, it's so fast people shouldnt notice the bad layering for the first 50%
+        faceEl.css('z-index', stacks[direction][face]);
 
-      // snapTo the new rotation position
-      // TODO: UP and DOWN directions...
-      snapTo(faceEl, {
-        rotateY: [rotations[direction][face], side.x]
-      }, face === 'middle' ? true : false);
+        // snapTo the new rotation position
+        snapTo(faceEl, {
+          rotateY: [rotations[direction][face], side.x]
+        }, face === 'middle' ? true : false);
+      }
+    }
+    // UP AND DOWN
+    else if (direction === 'up' || direction === 'down') {
+      // hide sides while vertically animating
+      toggleSideFaces(true);
+
+      // stash old y pos for forcefed animation
+      var oldY = faces.middle.y;
+
+      // bump current position
+      if (direction === 'up')   faces.middle.y += -90;
+      if (direction === 'down') faces.middle.y += 90;
+
+      // snap to a new vertical rotation
+      snapTo(faces.middle.node, {
+        rotateX: [faces.middle.y, oldY]
+      }, true);
     }
   }
 
