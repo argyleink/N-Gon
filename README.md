@@ -18,11 +18,11 @@ nGon is able to handle 2-dimensional arrays, but the 2nd dimension can only have
 `nGon.destroy();`
 
 ### Flip API
-`nGon.flip();` 
-`nGon.flip('forward'); or nGon.flip('left');`
-`nGon.flip('backward'); or nGon.flip('right');`
-`nGon.flip('up');`
-`nGon.flip('down');` 
+`nGon.flip();`  
+`nGon.flip('forward'); or nGon.flip('left');`  
+`nGon.flip('backward'); or nGon.flip('right');`  
+`nGon.flip('up');`  
+`nGon.flip('down');`   
 
 ### Adding data
 `nGon.append();`
