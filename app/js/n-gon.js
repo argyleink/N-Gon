@@ -28,8 +28,9 @@ var nGon = (function(){
         middle: 1,
         right:  2,
         left:   0,
-        currentDataIndex:   0,
-        lastKnownDirection: null
+        currentDataIndex:     0,
+        lastKnownDirection:   null,
+        preventHorizontalPan: false
       }
     ;
 
@@ -144,17 +145,19 @@ var nGon = (function(){
   }
 
   function handleHorizontalDrag(e) {
+    // REASONS TO STOP DRAGGING
+    // set a max touch pan amount, 10 degrees past threshold
+    if (Math.abs(e.gesture.deltaX) > 100) return;
+    // dont let user scroll before the first element
+    if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
+    // dont let user scroll before the last element
+    if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
+    // prevent horizontal pan while already having vertically panned
+    if (util.preventHorizontalPan) return;
+
     for (var face in faces) {
       // for each face
-
-      // REASONS TO STOP DRAGGING
       if (!faces.hasOwnProperty(face)) continue;
-      // set a max touch pan amount, 10 degrees past threshold
-      if (Math.abs(e.gesture.deltaX) > 100) continue;
-      // dont let user scroll before the first element
-      if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
-      // dont let user scroll before the last element
-      if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
       // DRAG LOGIC
       var side    = faces[face]
@@ -192,6 +195,10 @@ var nGon = (function(){
   function handleDragEnd(e) {
     util.lastKnownDirection = e.gesture.direction;
 
+    // REASONS TO NOT SNAP
+    if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
+    if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
+
     // drag ended, but which direction did it come from? Switch it!
     switch(e.gesture.direction) {
       case 'left':
@@ -199,10 +206,7 @@ var nGon = (function(){
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
-
-          // REASONS TO NOT SNAP
-          if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
-          if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
+          if (util.preventHorizontalPan) continue;
 
           // SNAP LOGIC
           var side    = faces[face]
@@ -234,6 +238,9 @@ var nGon = (function(){
 
         faces.middle.y = nearestMultiple(newY, 90);
 
+        // if we're not panned to the center poly, prevent horizontal drag
+        util.preventHorizontalPan = (faces.middle.y !== 0);
+
         snapTo(faces.middle.node, {
           rotateX: [faces.middle.y, newY]
         }, true);
@@ -262,7 +269,7 @@ var nGon = (function(){
         // increment data index, we moved forward
         util.currentDataIndex++;
 
-        if (faces.left.node) faces.left.node.remove();
+        if (util.currentDataIndex > 1) faces.left.node.remove();
         // old middle face is now left face
         faces.left.node = faces.middle.node;
         faces.left.x = -90;
@@ -367,6 +374,10 @@ var nGon = (function(){
     else if (posX > 90 || posX < -90)     return 0;
   }
 
+  function getFaces() {
+    return faces;
+  }
+
   // UTILITIES
   function nearestMultiple(i, j) {
     return Math.round(i/ j) * j;
@@ -378,6 +389,7 @@ var nGon = (function(){
   , flip:     flip
   , append:   appendFace
   , flipEnd:  flipEnd
+  , getFaces: getFaces
   }
 
 })();
