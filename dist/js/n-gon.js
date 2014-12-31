@@ -28,8 +28,9 @@ var nGon = (function(){
         middle: 1,
         right:  2,
         left:   0,
-        currentDataIndex:   0,
-        lastKnownDirection: null
+        currentDataIndex:     0,
+        lastKnownDirection:   null,
+        preventHorizontalPan: false
       }
     ;
 
@@ -122,6 +123,30 @@ var nGon = (function(){
     cubeContainer
       .hammer(options)
       .bind('dragleft dragright dragup dragdown dragend', handleDrag);
+
+    document.addEventListener('keydown', handleKeyPress);
+  }
+
+  function unlisten() {
+    cubeContainer.unbind('dragleft dragright dragup dragdown dragend', handleDrag);
+    document.removeEventListener('keydown', handleKeyPress);
+  }
+
+  function handleKeyPress(e) {
+    switch(e.keyCode) {
+      case 38:
+        flip('up');
+        break;
+      case 40:
+        flip('down');
+        break;
+      case 37:
+        flip('right');
+        break;
+      case 39:
+        flip('left');
+        break;
+    }
   }
 
   function handleDrag(e) {
@@ -144,17 +169,19 @@ var nGon = (function(){
   }
 
   function handleHorizontalDrag(e) {
+    // REASONS TO STOP DRAGGING
+    // set a max touch pan amount, 10 degrees past threshold
+    if (Math.abs(e.gesture.deltaX) > 100) return;
+    // dont let user scroll before the first element
+    if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
+    // dont let user scroll before the last element
+    if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
+    // prevent horizontal pan while already having vertically panned
+    if (util.preventHorizontalPan) return;
+
     for (var face in faces) {
       // for each face
-
-      // REASONS TO STOP DRAGGING
       if (!faces.hasOwnProperty(face)) continue;
-      // set a max touch pan amount, 10 degrees past threshold
-      if (Math.abs(e.gesture.deltaX) > 100) continue;
-      // dont let user scroll before the first element
-      if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
-      // dont let user scroll before the last element
-      if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
       // DRAG LOGIC
       var side    = faces[face]
@@ -192,17 +219,18 @@ var nGon = (function(){
   function handleDragEnd(e) {
     util.lastKnownDirection = e.gesture.direction;
 
+    // REASONS TO NOT SNAP
+    if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
+    if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
+
     // drag ended, but which direction did it come from? Switch it!
     switch(e.gesture.direction) {
       case 'left':
       case 'right':
+        if (util.preventHorizontalPan) return;
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
-
-          // REASONS TO NOT SNAP
-          if (util.currentDataIndex === 0 && e.gesture.direction === 'right') continue;
-          if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') continue;
 
           // SNAP LOGIC
           var side    = faces[face]
@@ -234,6 +262,9 @@ var nGon = (function(){
 
         faces.middle.y = nearestMultiple(newY, 90);
 
+        // if we're not panned to the center poly, prevent horizontal drag
+        util.preventHorizontalPan = (faces.middle.y !== 0);
+
         snapTo(faces.middle.node, {
           rotateX: [faces.middle.y, newY]
         }, true);
@@ -262,7 +293,7 @@ var nGon = (function(){
         // increment data index, we moved forward
         util.currentDataIndex++;
 
-        if (faces.left.node) faces.left.node.remove();
+        util.currentDataIndex > 1 && faces.left.node.remove();
         // old middle face is now left face
         faces.left.node = faces.middle.node;
         faces.left.x = -90;
@@ -281,7 +312,7 @@ var nGon = (function(){
       case 'right':
         util.currentDataIndex--;
 
-        if (faces.right.node) faces.right.node.remove();
+        faces.right.node && faces.right.node.remove();
         faces.right.node = faces.middle.node;
         faces.right.x = 90;
         faces.right.y = 0;
@@ -290,7 +321,12 @@ var nGon = (function(){
         faces.middle.x = 0;
         faces.middle.y = 0;
 
-        if (!data[util.currentDataIndex - 1]) break;
+
+        if (!data[util.currentDataIndex - 1]) {
+          // edge case, could half left face and middle face the same if we dont set to null
+          faces.left.node = null;
+          break;
+        }
 
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
@@ -314,26 +350,59 @@ var nGon = (function(){
     else if (direction === 'forward')   direction = 'left';
     else if (direction === 'backward')  direction = 'right';
 
+    // REASONS TO PREVENT FLIP
+    // would flip past beginning or end horizontally
+    if (util.currentDataIndex === 0 && direction === 'right') return;
+    if (util.currentDataIndex === data.length - 1 && direction === 'left') return;
+    // would flip past beginning or end vertically
+    if (faces.middle.y === -90 && direction === 'up') return;
+    if (faces.middle.y === 90 && direction === 'down') return;
+    // dont want to allow flipping horizontally if use has flipped vertically
+    if (util.preventHorizontalPan && direction === 'right') return;
+    if (util.preventHorizontalPan && direction === 'left') return;
+
     // set direction, helps with the snap complete function that cleans up after settling to a new location
     util.lastKnownDirection = direction;
 
-    // for each face, determine direction and apply the new proper position
-    for (var face in faces) {
-      if (!faces.hasOwnProperty(face)) continue;
+    // LEFT & RIGHT FLIP
+    if (direction === 'left' || direction === 'right') {
+      // for each face, determine direction and apply the new proper position
+      for (var face in faces) {
+        if (!faces.hasOwnProperty(face)) continue;
 
-      var side    = faces[face]
-        , faceEl  = side.node;
+        var side    = faces[face]
+          , faceEl  = side.node;
 
-      if (!faceEl) continue;
+        if (!faceEl) continue;
 
-      // set zindex prior to rotation, it's so fast people shouldnt notice the bad layering for the first 50%
-      faceEl.css('z-index', stacks[direction][face]);
+        // set zindex prior to rotation, it's so fast people shouldnt notice the bad layering for the first 50%
+        faceEl.css('z-index', stacks[direction][face]);
 
-      // snapTo the new rotation position
-      // TODO: UP and DOWN directions...
-      snapTo(faceEl, {
-        rotateY: [rotations[direction][face], side.x]
-      }, face === 'middle' ? true : false);
+        // snapTo the new rotation position
+        snapTo(faceEl, {
+          rotateY: [rotations[direction][face], side.x]
+        }, face === 'middle' ? true : false);
+      }
+    }
+    // UP AND DOWN
+    else if (direction === 'up' || direction === 'down') {
+      // hide sides while vertically animating
+      toggleSideFaces(true);
+
+      // stash old y pos for forcefed animation
+      var oldY = faces.middle.y;
+
+      // bump current position
+      if (direction === 'up')   faces.middle.y += -90;
+      if (direction === 'down') faces.middle.y += 90;
+
+      // if we're not panned to the center poly, prevent horizontal drag
+      util.preventHorizontalPan = (faces.middle.y !== 0);
+
+      // snap to a new vertical rotation
+      snapTo(faces.middle.node, {
+        rotateX: [faces.middle.y, oldY]
+      }, true);
     }
   }
 
@@ -367,6 +436,14 @@ var nGon = (function(){
     else if (posX > 90 || posX < -90)     return 0;
   }
 
+  function destroy() {
+    unlisten();
+  }
+
+  function getFaces() {
+    return faces;
+  }
+
   // UTILITIES
   function nearestMultiple(i, j) {
     return Math.round(i/ j) * j;
@@ -375,9 +452,11 @@ var nGon = (function(){
   // API
   return {
     init:     init
+  , destory:  destroy
   , flip:     flip
   , append:   appendFace
   , flipEnd:  flipEnd
+  , getFaces: getFaces
   }
 
 })();
