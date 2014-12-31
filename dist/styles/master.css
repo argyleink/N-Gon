@@ -91,9 +91,9 @@
 
 /* line 2 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/vars.styl */
 
-/* line 24 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/vars.styl */
+/* line 27 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/vars.styl */
 
-/* line 35 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
+/* line 1 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
 
 /* line 1 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
 html,
@@ -128,7 +128,12 @@ body {
   margin: 0;
 }
 
-/* line 1 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
+/* line 26 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
+img {
+  max-width: 100%;
+}
+
+/* line 15 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/base.styl */
 
 /* line 1 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/demo.styl */
 
@@ -151,6 +156,14 @@ body {
   #demo {
     max-width: 800px;
     height: 800px;
+  }
+}
+@media (max-height: 768px) and (max-width: 1024px) {
+
+/* line 13 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/demo.styl */
+  #demo {
+    max-width: 400px;
+    height: 400px;
   }
 }
 
@@ -181,7 +194,7 @@ body {
 
 /* line 16 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/n-gon.styl */
 .cube-window > .face {
-  background: rgba(0,170,255,0.5);
+  background: #0af;
   will-change: transform;
   -webkit-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;
@@ -191,7 +204,7 @@ body {
 
 /* line 21 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/n-gon.styl */
 .cube-window > .face > .poly {
-  background: rgba(0,170,255,0.5);
+  background: #0af;
   overflow: hidden;
   -webkit-backface-visibility: hidden;
   -ms-backface-visibility: hidden;

@@ -1,7 +1,9 @@
 var nGon = (function(){
 
   // SETUP AND OPTIONS
-  var cubeContainer     = $('#n-gon')
+  var cube                      // holds reference to cube/window
+    , cubeContainer             // element that cube is built into
+    , data
     , flipEndCallbacks  = []
     , options           = {
         dragLockToAxis:     true,
@@ -35,28 +37,20 @@ var nGon = (function(){
       }
     ;
 
-  // test fake data
-  var data = [
-    '<h1>First</h1>',
-    [
-      '<div class="poly"><h1>Top</h1></div>',
-      '<div class="poly"><h1>Second</h1></div>',
-      '<div class="poly"><h1>Bottom</h1></div>'
-    ],
-    '<img src="https://placekitten.com/g/500/500">',
-    '<h1>Fourth</h1>',
-    [
-      '<div class="poly"><img src="https://placekitten.com/g/500/500"></div>',
-      '<div class="poly"><img src="https://placekitten.com/g/800/500"></div>',
-      '<div class="poly"><img src="https://placekitten.com/g/700/500"></div>'
-    ],
-    '<h1>Sixth</h1>'
-  ]
+  // BEGIN N-GON LOGIC
+  function init(id, contentArray) {
+    // stash selector
+    cubeContainer = $('#' + id);
+    // create cube perspective viewport window
+    cube = $('<div class="cube-window"></div>');
+    // append cube to container specified
+    cubeContainer.append(cube);
 
-  // BEGIN ULTIMATE CUBE LOGIC
-  function init() {
+    data = contentArray.data;
+
     // create faces from an array of html
     create();
+    // tune in for events
     listen();
   }
 
@@ -69,7 +63,7 @@ var nGon = (function(){
   function createFace(side, data) {
     // create the face, set the data
     var newFace = $('<section class="face">').css({
-      transformOrigin: 'center center -' + (cubeContainer.width() / 2) + 'px'
+      transformOrigin: 'center center -' + (cubeContainer.outerWidth() / 2) + 'px'
     }).html(data);
 
     // depending on the side being created, set some styles and positions
@@ -111,7 +105,7 @@ var nGon = (function(){
     }
 
     // pop it into the page
-    cubeContainer.append(newFace);
+    cube.append(newFace);
   }
 
   function appendFace(html) {
@@ -121,7 +115,7 @@ var nGon = (function(){
 
   function listen() {
     // 1 event for maximum perf
-    cubeContainer
+    cube
       .hammer(options)
       .bind('dragleft dragright dragup dragdown dragend', handleDrag);
 
@@ -129,7 +123,7 @@ var nGon = (function(){
   }
 
   function unlisten() {
-    cubeContainer.unbind('dragleft dragright dragup dragdown dragend', handleDrag);
+    cube.unbind('dragleft dragright dragup dragdown dragend', handleDrag);
     document.removeEventListener('keydown', handleKeyPress);
   }
 
@@ -451,6 +445,17 @@ var nGon = (function(){
 
   function destroy() {
     unlisten();
+    cube.remove();
+
+    // set state vars back to originalvalues
+    faces.middle = {};
+    faces.left = {};
+    faces.right = {};
+    util.currentDataIndex = 0;
+    util.lastKnownDirection = null;
+    util.preventHorizontalPan = false;
+    util.overPanThreshold = false;
+    flipEndCallbacks = [];
   }
 
   function getFaces() {
@@ -465,7 +470,7 @@ var nGon = (function(){
   // API
   return {
     init:     init
-  , destory:  destroy
+  , destroy:  destroy
   , flip:     flip
   , append:   appendFace
   , flipEnd:  flipEnd
