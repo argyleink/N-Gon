@@ -123,6 +123,23 @@ var nGon = (function(){
     cubeContainer
       .hammer(options)
       .bind('dragleft dragright dragup dragdown dragend', handleDrag);
+
+    document.addEventListener("keydown", function(e) {
+      switch(e.keyCode) {
+        case 38:
+          flip('up');
+          break;
+        case 40:
+          flip('down');
+          break;
+        case 37:
+          flip('right');
+          break;
+        case 39:
+          flip('left');
+          break;
+      }
+    });
   }
 
   function handleDrag(e) {
