@@ -124,22 +124,29 @@ var nGon = (function(){
       .hammer(options)
       .bind('dragleft dragright dragup dragdown dragend', handleDrag);
 
-    document.addEventListener("keydown", function(e) {
-      switch(e.keyCode) {
-        case 38:
-          flip('up');
-          break;
-        case 40:
-          flip('down');
-          break;
-        case 37:
-          flip('right');
-          break;
-        case 39:
-          flip('left');
-          break;
-      }
-    });
+    document.addEventListener('keydown', handleKeyPress);
+  }
+
+  function unlisten() {
+    cubeContainer.unbind('dragleft dragright dragup dragdown dragend', handleDrag);
+    document.removeEventListener('keydown', handleKeyPress);
+  }
+
+  function handleKeyPress(e) {
+    switch(e.keyCode) {
+      case 38:
+        flip('up');
+        break;
+      case 40:
+        flip('down');
+        break;
+      case 37:
+        flip('right');
+        break;
+      case 39:
+        flip('left');
+        break;
+    }
   }
 
   function handleDrag(e) {
@@ -417,6 +424,10 @@ var nGon = (function(){
     else if (posX > 90 || posX < -90)     return 0;
   }
 
+  function destroy() {
+    unlisten();
+  }
+
   function getFaces() {
     return faces;
   }
@@ -429,6 +440,7 @@ var nGon = (function(){
   // API
   return {
     init:     init
+  , destory:  destroy
   , flip:     flip
   , append:   appendFace
   , flipEnd:  flipEnd
