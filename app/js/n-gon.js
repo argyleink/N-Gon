@@ -293,7 +293,7 @@ var nGon = (function(){
         // increment data index, we moved forward
         util.currentDataIndex++;
 
-        if (util.currentDataIndex > 1) faces.left.node.remove();
+        util.currentDataIndex > 1 && faces.left.node.remove();
         // old middle face is now left face
         faces.left.node = faces.middle.node;
         faces.left.x = -90;
@@ -312,7 +312,7 @@ var nGon = (function(){
       case 'right':
         util.currentDataIndex--;
 
-        if (faces.right.node) faces.right.node.remove();
+        faces.right.node && faces.right.node.remove();
         faces.right.node = faces.middle.node;
         faces.right.x = 90;
         faces.right.y = 0;
@@ -321,7 +321,12 @@ var nGon = (function(){
         faces.middle.x = 0;
         faces.middle.y = 0;
 
-        if (!data[util.currentDataIndex - 1]) break;
+
+        if (!data[util.currentDataIndex - 1]) {
+          // edge case, could half left face and middle face the same if we dont set to null
+          faces.left.node = null;
+          break;
+        }
 
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
