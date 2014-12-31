@@ -243,8 +243,8 @@ var nGon = (function(){
 
   function snapTo(el, options, completeListen) {
     el.velocity(options, {
-      duration: 700,
-      easing:   'easeOutExpo', // spring
+      duration: 350, // 700
+      easing:   [200, 20], // easeOutExpo
       complete: completeListen ? snapComplete : null
     });
   }
@@ -273,7 +273,8 @@ var nGon = (function(){
         faces.middle.y = 0;
 
         // add a new face, intended for the right face
-        if (!data[util.currentDataIndex + 1]) break;
+        if (!data[util.currentDataIndex + 1]) break; // but not if we're at the end of the data
+
         createFace(util.right, data[util.currentDataIndex + 1]);
         break;
 
@@ -289,11 +290,14 @@ var nGon = (function(){
         faces.middle.x = 0;
         faces.middle.y = 0;
 
+        if (!data[util.currentDataIndex - 1]) break;
+
         createFace(util.left, data[util.currentDataIndex - 1]);
         break;
 
       case 'up':
       case 'down':
+        // hide 2 sides while swiping vertically
         toggleSideFaces();
         break;
     }
