@@ -30,7 +30,8 @@ var nGon = (function(){
         left:   0,
         currentDataIndex:     0,
         lastKnownDirection:   null,
-        preventHorizontalPan: false
+        preventHorizontalPan: false,
+        overPanThreshold:     false
       }
     ;
 
@@ -171,7 +172,11 @@ var nGon = (function(){
   function handleHorizontalDrag(e) {
     // REASONS TO STOP DRAGGING
     // set a max touch pan amount, 10 degrees past threshold
-    if (Math.abs(e.gesture.deltaX) > 100) return;
+    if (Math.abs(e.gesture.deltaX) > 100) {
+      util.overPanThreshold = true;
+      return;
+    }
+    else util.overPanThreshold = false;
     // dont let user scroll before the first element
     if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
     // dont let user scroll before the last element
@@ -246,9 +251,17 @@ var nGon = (function(){
           // we're snapping, so round to nearest 90 and stash in the side state 
           side.x  = snapX;
 
-          snapTo(faceEl, {
-            rotateY: [side.x, newX]
-          }, face === 'middle' && moved ? true : false);
+          if (util.overPanThreshold) {
+            // controlled snapping, since we maxed the user out at a threshold
+            snapTo(faceEl, {
+              rotateY: [side.x, newX > 0 ? newX + 10 : newX - 10]
+            }, face === 'middle' && moved ? true : false);
+          } else {
+            // regular snapping behavior
+            snapTo(faceEl, {
+              rotateY: [side.x, newX]
+            }, face === 'middle' && moved ? true : false);
+          }
         }
         break;
 
