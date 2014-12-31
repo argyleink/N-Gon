@@ -351,6 +351,9 @@ var nGon = (function(){
     // would flip past beginning or end vertically
     if (faces.middle.y === -90 && direction === 'up') return;
     if (faces.middle.y === 90 && direction === 'down') return;
+    // dont want to allow flipping horizontally if use has flipped vertically
+    if (util.preventHorizontalPan && direction === 'right') return;
+    if (util.preventHorizontalPan && direction === 'left') return;
 
     // set direction, helps with the snap complete function that cleans up after settling to a new location
     util.lastKnownDirection = direction;
@@ -386,6 +389,9 @@ var nGon = (function(){
       // bump current position
       if (direction === 'up')   faces.middle.y += -90;
       if (direction === 'down') faces.middle.y += 90;
+
+      // if we're not panned to the center poly, prevent horizontal drag
+      util.preventHorizontalPan = (faces.middle.y !== 0);
 
       // snap to a new vertical rotation
       snapTo(faces.middle.node, {
