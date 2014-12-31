@@ -347,7 +347,8 @@ var nGon = (function(){
 
     // REASONS TO PREVENT FLIP
     // would flip past beginning or end horizontally
-    // TODO: 
+    if (util.currentDataIndex === 0 && direction === 'right') return;
+    if (util.currentDataIndex === data.length - 1 && direction === 'left') return;
     // would flip past beginning or end vertically
     if (faces.middle.y === -90 && direction === 'up') return;
     if (faces.middle.y === 90 && direction === 'down') return;
