@@ -358,6 +358,9 @@ var nGon = (function(){
     else if (direction === 'backward')  direction = 'right';
 
     // REASONS TO PREVENT FLIP
+    // would flip and not having any faces to show for it
+    if (direction === 'up' && typeof(data[util.currentDataIndex]) === 'string') return;
+    if (direction === 'down' && typeof(data[util.currentDataIndex]) === 'string') return;
     // would flip past beginning or end horizontally
     if (util.currentDataIndex === 0 && direction === 'right') return;
     if (util.currentDataIndex === data.length - 1 && direction === 'left') return;
