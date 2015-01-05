@@ -1,6 +1,11 @@
 ## N-Gon
 > Looks like a cube, acts like a cube, but isn't a cube at all.
 
+### Dependencies
+- jQuery
+- Hammer v1.1.3
+- Velocity
+
 ### Getting Started
 Of course pull the script down and import it into your projects. Script is located at:
 `app/js/n-gon.js` or `dist/js/n-gon.js`
