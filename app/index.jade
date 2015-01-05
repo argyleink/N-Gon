@@ -2,37 +2,17 @@ doctype html
 html(manifest = dev ? '' : 'manifest.appcache')
   include includes/head
   body
+    header.row.center-xs
+      .col-xs
+        a#wires(href='#') Wireframe Mode
+      .col-xs
+        a#append(href='#') Add a face
     
     //- flexbox centering and layout
-    .row.center-xs.middle-xs(style='height:100vh;'): #demo.col-xs
+    .row.center-xs.middle-xs(style='height:calc(100vh - 50px);')
+      #demo.col-xs
 
   script(src='js/lib.min.js')
   script(src='js/n-gon.js')
-  script.
-    nGon.init('demo', {
-      //- init with data
-      data: [
-        '<h1>First</h1>',
-        [
-          '<div class="poly"><h1>Top</h1></div>',
-          '<div class="poly"><h1>Second:Middle</h1></div>',
-          '<div class="poly"><h1>Bottom</h1></div>'
-        ],
-        '<img src="https://placekitten.com/g/500/500">',
-        '<h1>Fourth</h1>',
-        [
-          '<div class="poly"><img src="https://placekitten.com/g/500/500"></div>',
-          '<div class="poly"><img src="https://placekitten.com/g/800/500"></div>',
-          '<div class="poly"><img src="https://placekitten.com/g/700/500"></div>'
-        ],
-        '<h1>Sixth</h1>'
-      ]
-    });
-
-    //- append more data later
-    nGon.append('<h1>Appended</h1>');
-
-    //- listen for events
-    nGon.flipEnd(function(dir, faces){ 
-      //- console.log(dir, faces); 
-    });
+  script(src='js/demo.js')
+  script(src='js/example.js')
