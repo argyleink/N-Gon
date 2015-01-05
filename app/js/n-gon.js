@@ -313,7 +313,12 @@ var nGon = (function(){
         faces.middle.y = 0;
 
         // add a new face, intended for the right face
-        if (!data[util.currentDataIndex + 1]) break; // but not if we're at the end of the data
+        // but not if we're at the end of the data
+        if (!data[util.currentDataIndex + 1]) {
+          // edge case, could have right and middle faces the same, if we dont set to null
+          faces.right.node = null;
+          break;
+        }
 
         createFace(util.right, data[util.currentDataIndex + 1]);
         break;
@@ -332,7 +337,7 @@ var nGon = (function(){
 
 
         if (!data[util.currentDataIndex - 1]) {
-          // edge case, could half left face and middle face the same if we dont set to null
+          // edge case, could have left and middle faces the same, if we dont set to null
           faces.left.node = null;
           break;
         }
