@@ -33,12 +33,14 @@ var nGon = (function(){
         currentDataIndex:     0,
         lastKnownDirection:   null,
         preventHorizontalPan: false,
+        snapping:             false,
+        moved:                false,
         overPanThreshold:     false
       }
     ;
 
   // BEGIN N-GON LOGIC
-  function init(id, contentArray) {
+  function init(id, content) {
     // stash selector
     cubeContainer = $('#' + id);
     // create cube perspective viewport window
@@ -46,7 +48,7 @@ var nGon = (function(){
     // append cube to container specified
     cubeContainer.append(cube);
 
-    data = contentArray.data;
+    data = content.data;
 
     // create faces from an array of html
     create();
@@ -111,6 +113,12 @@ var nGon = (function(){
   function appendFace(html) {
     if      (typeof(html) === 'string') data.push(html);
     else if (typeof(html) === 'object') data.push(html.outerHTML);
+
+    // check to see if this is new data and were at the end of the data already
+    if (!data[util.currentDataIndex + 2]) {
+      // now we create a face, since it's now next in line
+      createFace(util.right, data[util.currentDataIndex + 1]);
+    }
   }
 
   function listen() {
@@ -129,23 +137,16 @@ var nGon = (function(){
 
   function handleKeyPress(e) {
     switch(e.keyCode) {
-      case 38:
-        flip('up');
-        break;
-      case 40:
-        flip('down');
-        break;
-      case 37:
-        flip('right');
-        break;
-      case 39:
-        flip('left');
-        break;
+      case 38: flip('up');    break;
+      case 40: flip('down');  break;
+      case 37: flip('right'); break;
+      case 39: flip('left');  break;
     }
   }
 
   function handleDrag(e) {
-    // console.log(e.gesture.deltaX);
+    // if user just released and animation is snapping, prevent new dragging
+    if (util.snapping) return;
 
     // pass the event on to their respective handlers
     switch(e.type) {
@@ -219,6 +220,7 @@ var nGon = (function(){
     util.lastKnownDirection = e.gesture.direction;
 
     // REASONS TO NOT SNAP
+    if (util.snapping) return;
     if (util.currentDataIndex === 0 && e.gesture.direction === 'right') return;
     if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
 
@@ -232,30 +234,28 @@ var nGon = (function(){
           if (!faces.hasOwnProperty(face)) continue;
 
           // SNAP LOGIC
-          var side    = faces[face]
-            , faceEl  = side.node
-            , over    = Math.abs(e.gesture.deltaX) > 135
-            , dX      = over ? setDeltaMax(e.gesture.deltaX) : e.gesture.deltaX
-            , newX    = Math.round(side.x + dX)
-            , snapX   = nearestMultiple(newX, 90)
-            , moved   = snapX !== side.x; // did we actually move
+          var side                    = faces[face]
+            , faceEl                  = side.node
+            , over                    = Math.abs(e.gesture.deltaX) > 135
+            , dX                      = over ? setDeltaMax(e.gesture.deltaX) : e.gesture.deltaX
+            , newX                    = Math.round(side.x + dX)
+            , snapX                   = nearestMultiple(newX, 90)
+            , listenToCompleteEvent   = face === 'middle' ? true : false;
+
+          util.moved = snapX !== side.x;
 
           if (!faceEl) continue;
 
           // we're snapping, so round to nearest 90 and stash in the side state 
           side.x  = snapX;
 
-          if (util.overPanThreshold) {
-            // controlled snapping, since we maxed the user out at a threshold
-            snapTo(faceEl, {
-              rotateY: [side.x, newX > 0 ? newX + 10 : newX - 10]
-            }, face === 'middle' && moved ? true : false);
-          } else {
-            // regular snapping behavior
-            snapTo(faceEl, {
-              rotateY: [side.x, newX]
-            }, face === 'middle' && moved ? true : false);
-          }
+          // controlled snapping, since we maxed the user out at a threshold
+          if (util.overPanThreshold)
+            newX = newX > 0 ? newX + 10 : newX - 10
+          
+          snapTo(faceEl, {
+            rotateY: [side.x, newX]
+          }, listenToCompleteEvent);
         }
         break;
 
@@ -280,6 +280,8 @@ var nGon = (function(){
   }
 
   function snapTo(el, options, completeListen) {
+    util.snapping = true;
+
     el.velocity(options, {
       duration: 350, // 700
       easing:   [200, 20], // easeOutExpo
@@ -294,6 +296,12 @@ var nGon = (function(){
     // swapping out a face
     // swapping in a face
     // and updating the faces object with the new positions
+
+    // snapping done, set the var so other events will fire again
+    util.snapping = false;
+
+    // if we didnt move, then done run the below logic that will create new side faces
+    if (!util.moved) return;
 
     switch(util.lastKnownDirection) {
       case 'left':
@@ -311,7 +319,12 @@ var nGon = (function(){
         faces.middle.y = 0;
 
         // add a new face, intended for the right face
-        if (!data[util.currentDataIndex + 1]) break; // but not if we're at the end of the data
+        // but not if we're at the end of the data
+        if (!data[util.currentDataIndex + 1]) {
+          // edge case, could have right and middle faces the same, if we dont set to null
+          faces.right.node = null;
+          break;
+        }
 
         createFace(util.right, data[util.currentDataIndex + 1]);
         break;
@@ -330,7 +343,7 @@ var nGon = (function(){
 
 
         if (!data[util.currentDataIndex - 1]) {
-          // edge case, could half left face and middle face the same if we dont set to null
+          // edge case, could have left and middle faces the same, if we dont set to null
           faces.left.node = null;
           break;
         }
@@ -358,6 +371,8 @@ var nGon = (function(){
     else if (direction === 'backward')  direction = 'right';
 
     // REASONS TO PREVENT FLIP
+    // if user just released and animation is snapping, prevent flipping
+    if (util.snapping) return;
     // would flip and not having any faces to show for it
     if (direction === 'up' && typeof(data[util.currentDataIndex]) === 'string') return;
     if (direction === 'down' && typeof(data[util.currentDataIndex]) === 'string') return;
@@ -373,6 +388,7 @@ var nGon = (function(){
 
     // set direction, helps with the snap complete function that cleans up after settling to a new location
     util.lastKnownDirection = direction;
+    util.moved = true;
 
     // LEFT & RIGHT FLIP
     if (direction === 'left' || direction === 'right') {
