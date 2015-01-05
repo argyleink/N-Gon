@@ -113,6 +113,12 @@ var nGon = (function(){
   function appendFace(html) {
     if      (typeof(html) === 'string') data.push(html);
     else if (typeof(html) === 'object') data.push(html.outerHTML);
+
+    // check to see if this is new data and were at the end of the data already
+    if (!data[util.currentDataIndex + 2]) {
+      // now we create a face, since it's now next in line
+      createFace(util.right, data[util.currentDataIndex + 1]);
+    }
   }
 
   function listen() {
