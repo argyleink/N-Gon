@@ -6,8 +6,10 @@ var nGon = (function(){
     , data
     , flipEndCallbacks  = []
     , options           = {
-        dragLockToAxis:     true,
-        preventDefault:     true
+        dragLockToAxis:       true,
+        preventDefault:       true,
+        dragBlockHorizontal:  true,
+        dragBlockVertical:    true
       }
       // will hold state information and a ref to the node
     , faces             = {
