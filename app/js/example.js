@@ -1,4 +1,4 @@
-nGon.init('demo', {
+nGon.init($('#demo'), {
   // init with data
   data: [
     '<h1>First</h1>',
