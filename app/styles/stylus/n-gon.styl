@@ -14,6 +14,13 @@ cube-color = white
   perspective:800
   perspective-origin:50% 50%
   
+  cursor: move
+  cursor: grab
+  
+  &:active
+    cursor: move
+    cursor: grabbing
+  
   & > .face
     background:cube-color
     will-change:transform
