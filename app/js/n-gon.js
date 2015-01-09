@@ -52,7 +52,7 @@ var nGon = (function(){
     // append cube to container specified
     cubeContainer.append(cube);
 
-    data = content.data;
+    data = content;
 
     // create faces from an array of html
     create();
