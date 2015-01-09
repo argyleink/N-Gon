@@ -1,6 +1,4 @@
-nGon.init($('#demo'), {
-  // init with data
-  data: [
+nGon.init($('#demo'), [
     '<h1>First</h1>',
     [
       '<div class="poly"><h1>Top</h1></div>',
@@ -16,7 +14,7 @@ nGon.init($('#demo'), {
     ],
     '<h1>Sixth</h1>'
   ]
-});
+);
 
 // append more data later
 nGon.append('<h1>Appended</h1>');
