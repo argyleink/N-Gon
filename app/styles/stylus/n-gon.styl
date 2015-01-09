@@ -1,4 +1,5 @@
-cube-color = hsla(200,100%,50%,100%)
+// cube-color = hsla(200,100%,50%,100%)
+cube-color = white
 
 .cube-window,
 .face,
@@ -12,6 +13,13 @@ cube-color = hsla(200,100%,50%,100%)
 .cube-window
   perspective:800
   perspective-origin:50% 50%
+  
+  cursor: move
+  cursor: grab
+  
+  &:active
+    cursor: move
+    cursor: grabbing
   
   & > .face
     background:cube-color

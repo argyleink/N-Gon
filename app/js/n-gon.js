@@ -42,15 +42,17 @@ var nGon = (function(){
     ;
 
   // BEGIN N-GON LOGIC
-  function init(id, content) {
+  function init(el, content) {
     // stash selector
-    cubeContainer = $('#' + id);
+    if      (typeof(el) === 'string') cubeContainer = $('#' + el);
+    else if (typeof(el) === 'object') cubeContainer = el;
+
     // create cube perspective viewport window
     cube = $('<div class="cube-window"></div>');
     // append cube to container specified
     cubeContainer.append(cube);
 
-    data = content.data;
+    data = content;
 
     // create faces from an array of html
     create();
