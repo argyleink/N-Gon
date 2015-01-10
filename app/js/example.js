@@ -1,5 +1,9 @@
 nGon.init($('#demo'), [
-    '<h1>First</h1>',
+    [
+      '<div class="poly"><h1>Top</h1></div>',
+      '<div class="poly"><h1>First:Middle</h1></div>',
+      '<div class="poly"><h1>Bottom</h1></div>'
+    ],
     [
       '<div class="poly"><h1>Top</h1></div>',
       '<div class="poly"><h1>Second:Middle</h1></div>',
