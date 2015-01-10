@@ -270,8 +270,11 @@ var nGon = (function(){
 
         // up and down only control 1 face, the middle one
         var newY = Math.round(faces.middle.y + e.gesture.deltaY);
+        var snapY = nearestMultiple(newY, 90);
 
-        faces.middle.y = nearestMultiple(newY, 90);
+        util.moved = snapY !== faces.middle.y;
+
+        faces.middle.y = snapY;
 
         // if we're not panned to the center poly, prevent horizontal drag
         util.preventHorizontalPan = (faces.middle.y !== 0);
@@ -442,14 +445,14 @@ var nGon = (function(){
 
   function toggleSideFaces(hide) {
     if (hide) {
-      if (faces.left.node.css('visibility') === 'hidden') return;
-      faces.left.node.css('visibility', 'hidden');
-      faces.right.node.css('visibility', 'hidden');
+      // dont keep hiding if already hidden
+      if (faces.left.node && faces.left.node.css('visibility') === 'hidden') return;
+      // if checks are because we may hit the end or the beginning, skip css if node isnt there
+      faces.left.node && faces.left.node.css('visibility', 'hidden');
+      faces.right.node && faces.right.node.css('visibility', 'hidden');
     } else {
-      if (faces.left.node.css('visibility') === 'hidden') {
-        faces.left.node.css('visibility', '');
-        faces.right.node.css('visibility', '');
-      }
+      faces.left.node && faces.left.node.css('visibility', '');
+      faces.right.node && faces.right.node.css('visibility', '');
     }
   }
 
