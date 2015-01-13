@@ -290,7 +290,7 @@ var nGon = (function(){
     util.snapping = true;
 
     el.velocity(options, {
-      duration: 350, // 700
+      duration: 450, // 700
       easing:   [200, 20], // easeOutExpo
       complete: completeListen ? snapComplete : null
     });
