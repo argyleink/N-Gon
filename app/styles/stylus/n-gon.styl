@@ -1,5 +1,5 @@
-// cube-color = hsla(200,100%,50%,100%)
-cube-color = white
+cube-color = hsla(200,100%,50%,100%)
+// cube-color = white
 
 .cube-window,
 .face,
@@ -11,7 +11,7 @@ cube-color = white
   left:0
 
 .cube-window
-  perspective:800
+  perspective:800px
   perspective-origin:50% 50%
   
   cursor: move
@@ -32,12 +32,12 @@ cube-color = white
       backface-visibility:hidden
       will-change:transform
       
-      &:nth-child(1)
-        transform:rotateX(90deg)
-        transform-origin:bottom center
-        top:-100%
+      &:nth-child(2)
+        transform:rotateX(-90deg)
+        transform-origin:top center
+        top:100%
         
       &:nth-child(3)
-        transform:rotateX(-90deg)
+        transform:rotateX(-180deg)
         transform-origin:top center
         top:100%

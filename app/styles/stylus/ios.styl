@@ -1,0 +1,12 @@
+.cube-window 
+  -webkit-transform-origin-z:300px
+  
+  > .face 
+    -webkit-backface-visibility:hidden
+    
+    > .poly
+      -webkit-backface-visibility:visible
+  
+@media (max-device-width: 600px)
+  .cube-window
+    -webkit-transform-origin-z:initial
