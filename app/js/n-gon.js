@@ -278,7 +278,17 @@ var nGon = (function(){
 
         util.moved = snapY !== faces.middle.y;
 
+        // console.log(snapY);
+        // fix any over scrolled snap values
+        if      (snapY < 0)   snapY = 0;
+        else if (snapY > 180) snapY = 180;
+        // now we can set Y
         faces.middle.y = snapY;
+
+        // fix any over scrolled start snap values
+        console.log(newY);
+        if (newY < -10) newY = -10;
+        if (newY >= 190) newY = 190;
 
         // if we're not panned to the center poly, prevent horizontal drag
         util.preventHorizontalPan = (faces.middle.y !== 0);
