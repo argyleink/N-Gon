@@ -1,5 +1,6 @@
 stylusFiles = [
   "dist/styles/master.css":   "app/styles/master.styl"
+  "dist/styles/ios.css":      "app/styles/stylus/ios.styl"
 ]
 
 autoprefixerPlugin = [

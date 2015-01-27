@@ -1,0 +1,28 @@
+
+/* line 286 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+
+/* line 1 : /Users/aargyle/dev/Ultimate-Cube/node_modules/grunt-contrib-stylus/node_modules/stylus/lib/functions/index.styl */
+
+/* line 1 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+.cube-window {
+  -webkit-transform-origin-z: 300px;
+}
+
+/* line 4 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+.cube-window > .face {
+  -webkit-backface-visibility: hidden;
+}
+
+/* line 7 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+.cube-window > .face > .poly {
+  -webkit-backface-visibility: visible;
+}
+
+/* line 10 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+@media (max-device-width: 600px) {
+
+/* line 11 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/ios.styl */
+  .cube-window {
+    -webkit-transform-origin-z: initial;
+  }
+}

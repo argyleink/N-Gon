@@ -41,6 +41,10 @@ var nGon = (function(){
       }
     ;
 
+  // FIX iOS and Safari
+  if (navigator.userAgent.indexOf("Safari") > -1)
+    document.write('<link rel="stylesheet" type="text/css" href="/styles/ios.css"></link>');
+
   // BEGIN N-GON LOGIC
   function init(el, content) {
     // stash selector
