@@ -257,18 +257,18 @@ a:active {
 }
 
 /* line 35 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/n-gon.styl */
-.cube-window > .face > .poly:nth-child(1) {
-  -webkit-transform: rotateX(90deg);
-  transform: rotateX(90deg);
-  -webkit-transform-origin: bottom center;
-  transform-origin: bottom center;
-  top: -100%;
+.cube-window > .face > .poly:nth-child(2) {
+  -webkit-transform: rotateX(-90deg);
+  transform: rotateX(-90deg);
+  -webkit-transform-origin: top center;
+  transform-origin: top center;
+  top: 100%;
 }
 
 /* line 40 : /Users/aargyle/dev/Ultimate-Cube/app/styles/stylus/n-gon.styl */
 .cube-window > .face > .poly:nth-child(3) {
-  -webkit-transform: rotateX(-90deg);
-  transform: rotateX(-90deg);
+  -webkit-transform: rotateX(-180deg);
+  transform: rotateX(-180deg);
   -webkit-transform-origin: top center;
   transform-origin: top center;
   top: 100%;

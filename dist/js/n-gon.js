@@ -41,6 +41,10 @@ var nGon = (function(){
       }
     ;
 
+  // FIX iOS and Safari
+  if (navigator.userAgent.indexOf("Safari") > -1)
+    document.write('<link rel="stylesheet" type="text/css" href="/styles/ios.css"></link>');
+
   // BEGIN N-GON LOGIC
   function init(el, content) {
     // stash selector
@@ -67,6 +71,10 @@ var nGon = (function(){
   }
 
   function createFace(side, data) {
+    // hack 3rd face position for now
+    if (data && data.length === 3)
+      data[2] = $(data[2]).css('transform', 'rotateX(-180deg) translateZ('+ cubeContainer.outerWidth() +'px)')[0].outerHTML
+
     // create the face, set the data
     var newFace = $('<section class="face">').css({
       transformOrigin: 'center center -' + (cubeContainer.outerWidth() / 2) + 'px'
@@ -210,7 +218,7 @@ var nGon = (function(){
     var newY = Math.round(faces.middle.y + e.gesture.deltaY);
 
     // set a max touch pan amount
-    if (Math.abs(newY) > 100) return;
+    if (newY < -10 || newY > 190) return;
 
     // hide the 2 side faces to maintain the illusion
     toggleSideFaces(true);
@@ -274,7 +282,17 @@ var nGon = (function(){
 
         util.moved = snapY !== faces.middle.y;
 
+        // console.log(snapY);
+        // fix any over scrolled snap values
+        if      (snapY < 0)   snapY = 0;
+        else if (snapY > 180) snapY = 180;
+        // now we can set Y
         faces.middle.y = snapY;
+
+        // fix any over scrolled start snap values
+        console.log(newY);
+        if (newY < -10) newY = -10;
+        if (newY >= 190) newY = 190;
 
         // if we're not panned to the center poly, prevent horizontal drag
         util.preventHorizontalPan = (faces.middle.y !== 0);
@@ -289,11 +307,19 @@ var nGon = (function(){
   function snapTo(el, options, completeListen) {
     util.snapping = true;
 
+    // non-physics easing (for perf testing differences?)
     el.velocity(options, {
-      duration: 450, // 700
-      easing:   [200, 20], // easeOutExpo
+      duration: 500,
+      easing:   'easeOutExpo',
       complete: completeListen ? snapComplete : null
     });
+
+    // physics easing
+    // el.velocity(options, {
+    //   duration: 450, // 700
+    //   easing:   [200, 20], // easeOutExpo
+    //   complete: completeListen ? snapComplete : null
+    // });
   }
 
   function snapComplete(e) {
