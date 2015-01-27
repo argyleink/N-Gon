@@ -67,6 +67,10 @@ var nGon = (function(){
   }
 
   function createFace(side, data) {
+    // hack 3rd face position for now
+    if (data && data.length === 3)
+      data[2] = $(data[2]).css('transform', 'rotateX(-180deg) translateZ('+ cubeContainer.outerWidth() +'px)')[0].outerHTML
+
     // create the face, set the data
     var newFace = $('<section class="face">').css({
       transformOrigin: 'center center -' + (cubeContainer.outerWidth() / 2) + 'px'
@@ -210,7 +214,7 @@ var nGon = (function(){
     var newY = Math.round(faces.middle.y + e.gesture.deltaY);
 
     // set a max touch pan amount
-    if (Math.abs(newY) > 100) return;
+    if (newY < -10 || newY > 190) return;
 
     // hide the 2 side faces to maintain the illusion
     toggleSideFaces(true);
@@ -289,11 +293,19 @@ var nGon = (function(){
   function snapTo(el, options, completeListen) {
     util.snapping = true;
 
+    // non-physics easing (for perf testing differences?)
     el.velocity(options, {
-      duration: 450, // 700
-      easing:   [200, 20], // easeOutExpo
+      duration: 500,
+      easing:   'easeOutExpo',
       complete: completeListen ? snapComplete : null
     });
+
+    // physics easing
+    // el.velocity(options, {
+    //   duration: 450, // 700
+    //   easing:   [200, 20], // easeOutExpo
+    //   complete: completeListen ? snapComplete : null
+    // });
   }
 
   function snapComplete(e) {
