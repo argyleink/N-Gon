@@ -189,7 +189,7 @@ var nGon = (function(){
     // dont let user scroll before the last element
     if (util.currentDataIndex === data.length - 1 && e.gesture.direction === 'left') return;
     // prevent horizontal pan while already having vertically panned
-    if (util.preventHorizontalPan) return;
+    // if (util.preventHorizontalPan) return;
 
     for (var face in faces) {
       // for each face
@@ -205,7 +205,7 @@ var nGon = (function(){
 
       // apply new x position
       faceEl.css({
-        transform: 'rotateY('+ newX +'deg)',
+        transform: 'rotateY('+ newX +'deg) rotateX('+ side.y + 'deg)',
         zIndex: determineStackOrderFromX(newX)
       });
     }
@@ -240,7 +240,7 @@ var nGon = (function(){
     switch(e.gesture.direction) {
       case 'left':
       case 'right':
-        if (util.preventHorizontalPan) return;
+        // if (util.preventHorizontalPan) return;
         // we need to iterate and snap animate all 3 faces
         for (var face in faces) {
           if (!faces.hasOwnProperty(face)) continue;
@@ -264,9 +264,13 @@ var nGon = (function(){
           // controlled snapping, since we maxed the user out at a threshold
           if (util.overPanThreshold)
             newX = newX > 0 ? newX + 10 : newX - 10
-          
+
+          if (side.y !== 0)
+            side.node.css('visibility', 'hidden')
+
           snapTo(faceEl, {
-            rotateY: [side.x, newX]
+            rotateY: [side.x, newX],
+            rotateX: [0, side.y]
           }, listenToCompleteEvent);
         }
         break;
@@ -346,6 +350,10 @@ var nGon = (function(){
         faces.left.node = faces.middle.node;
         faces.left.x = -90;
         faces.left.y = 0;
+        faces.left.node.css({
+          transform: 'rotateY(' + faces.left.x + 'deg) rotateX(' + faces.left.y + 'deg)',
+          visibility: ''
+        });
 
         faces.middle.node = faces.right.node;
         faces.middle.x = 0;
@@ -369,6 +377,10 @@ var nGon = (function(){
         faces.right.node = faces.middle.node;
         faces.right.x = 90;
         faces.right.y = 0;
+        faces.right.node.css({
+          transform: 'rotateY(' + faces.right.x + 'deg) rotateX(' + faces.right.y + 'deg)',
+          visibility: ''
+        });
 
         faces.middle.node = faces.left.node;
         faces.middle.x = 0;
